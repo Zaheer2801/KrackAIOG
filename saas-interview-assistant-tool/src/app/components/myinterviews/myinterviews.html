@@ -1,0 +1,118 @@
+<div class="min-h-screen w-full bg-gray-900/50 backdrop-blur-lg p-6 overflow-y-auto">
+    <!-- Container -->
+    <div class="max-w-6xl mx-auto space-y-8">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold text-white">Your Past Interviews</h2>
+
+            <a routerLink="/dashboard"
+                class="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition shadow-md">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && interviews.length === 0" class="text-center py-12 text-gray-400">
+            <p class="text-lg">No interviews yet.</p>
+            <p class="mt-2">Start practicing to see your history here!</p>
+        </div>
+
+        <!-- Interviews List -->
+        <div *ngIf="!loading && interviews.length > 0" class="space-y-4">
+            <div *ngFor="let session of interviews" class="space-y-2">
+
+                <!-- Session Card -->
+                <div class="flex items-center gap-4 p-4 bg-gray-900/50 hover:bg-gray-900/70 rounded-2xl transition-all border border-gray-700/40 cursor-pointer shadow-sm"
+                    (click)="toggleInterview(session._id)">
+                    <div
+                        class="shrink-0 w-10 h-10 rounded-lg bg-cyan-400/10 border border-cyan-400/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <p class="text-gray-300 text-sm sm:text-base">
+                            {{ session.date | date:'mediumDate' }} • {{ formatTime(session.timeTaken) }}
+                        </p>
+                    </div>
+
+                    <span
+                        class="shrink-0 px-3 py-1 bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-medium rounded-full">
+                        {{ session.status | titlecase }}
+                    </span>
+                </div>
+
+                <!-- Expanded Questions Panel -->
+                <div *ngIf="expandedInterview && expandedInterview._id === session._id"
+                    class="mt-4 p-6 bg-gray-800/50 rounded-2xl border border-gray-700/50 animate-fade-in">
+
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="text-lg font-semibold text-white">Questions & Answers</h4>
+                        <div class="flex gap-2">
+                            <button (click)="downloadPDF(expandedInterview)"
+                                class="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold rounded-xl transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                PDF
+                            </button>
+                            <button (click)="downloadDOC(expandedInterview)"
+                                class="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold rounded-xl transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                DOC
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- No Questions -->
+                    <p *ngIf="expandedInterview.questions.length === 0" class="text-gray-400 italic">
+                        No questions were answered in this session.
+                    </p>
+
+                    <!-- Questions -->
+                    <div *ngFor="let q of expandedInterview.questions" class="mb-8 last:mb-0">
+                        <p class="text-cyan-300 font-bold text-sm tracking-widest uppercase mb-2">Q{{ q.questionNumber }}</p>
+                        <div class="space-y-3 bg-gray-900/40 p-5 rounded-xl border border-gray-700/30">
+                            <p class="text-gray-100 font-semibold text-base leading-relaxed">{{ q.question }}</p>
+                            <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{{ q.answer }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPages > 1" class="mt-10 flex justify-center gap-2">
+            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition">
+                Previous
+            </button>
+
+            <button *ngFor="let page of pages" (click)="goToPage(page)"
+                [ngClass]="page === currentPage ? 'bg-cyan-600' : 'bg-gray-800 hover:bg-gray-700'"
+                class="px-4 py-2 rounded-lg text-white transition">
+                {{ page }}
+            </button>
+
+            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition">
+                Next
+            </button>
+        </nav>
+
+    </div>
+</div>

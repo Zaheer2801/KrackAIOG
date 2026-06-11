@@ -1,0 +1,92 @@
+<div class="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] px-4 py-10">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Back -->
+    <div class="mb-6">
+      <app-back></app-back>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold tracking-tight text-[#1d1d1f] mb-3">
+        Get More Interview Time
+      </h1>
+      <p class="text-gray-500 text-lg font-medium">
+        You've used all your credits. Top up to keep practicing.
+      </p>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @for (plan of plans; track plan.priceId) {
+      <div
+        class="relative rounded-3xl p-8 flex flex-col transition-all border"
+        [class]="plan.recommended
+          ? 'bg-[#0071e3] text-white border-[#0071e3] shadow-[0_8px_32px_rgba(0,113,227,0.35)] scale-[1.03]'
+          : 'bg-white/80 backdrop-blur-md border-gray-200/60 shadow-sm hover:shadow-md'"
+      >
+        <!-- Recommended Badge -->
+        @if (plan.recommended) {
+        <span
+          class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-[#0071e3] text-xs font-bold uppercase rounded-full shadow-md tracking-widest whitespace-nowrap"
+        >
+          Most Popular
+        </span>
+        }
+
+        <!-- Plan Info -->
+        <div class="mb-6">
+          <h2 class="text-xl font-bold mb-1" [class.text-white]="plan.recommended" [class.text-[#1d1d1f]]="!plan.recommended">
+            {{ plan.label }}
+          </h2>
+          <p class="text-4xl font-bold tracking-tight mt-2" [class.text-white]="plan.recommended" [class.text-[#1d1d1f]]="!plan.recommended">
+            {{ plan.minutes }} <span class="text-lg font-medium">min</span>
+          </p>
+          <p class="text-sm mt-1 font-medium" [class.text-blue-100]="plan.recommended" [class.text-gray-400]="!plan.recommended">
+            of AI interview coaching
+          </p>
+        </div>
+
+        <!-- Features -->
+        <ul class="flex-1 space-y-3 mb-8">
+          @for (feature of plan.features; track $index) {
+          <li class="flex items-center gap-2 text-sm font-medium" [class.text-blue-50]="plan.recommended" [class.text-gray-600]="!plan.recommended">
+            <svg class="w-4 h-4 shrink-0" [class.text-white]="plan.recommended" [class.text-[#0071e3]]="!plan.recommended" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+            {{ feature }}
+          </li>
+          }
+        </ul>
+
+        <!-- CTA Button -->
+        <button
+          (click)="purchase(plan)"
+          [disabled]="isLoading[plan.priceId]"
+          class="w-full py-3 rounded-2xl font-bold text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          [class]="plan.recommended
+            ? 'bg-white text-[#0071e3] hover:bg-blue-50 shadow-md'
+            : 'bg-[#0071e3] text-white hover:bg-blue-600 shadow-[0_4px_14px_rgba(0,113,227,0.3)]'"
+        >
+          @if (isLoading[plan.priceId]) {
+            <span class="flex items-center justify-center gap-2">
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Redirecting...
+            </span>
+          } @else {
+            Buy {{ plan.minutes }} Minutes
+          }
+        </button>
+      </div>
+      }
+    </div>
+
+    <!-- Footer note -->
+    <p class="text-center text-xs text-gray-400 mt-10 font-medium">
+      Secure payments via Stripe. Credits are added instantly after purchase.
+    </p>
+  </div>
+</div>

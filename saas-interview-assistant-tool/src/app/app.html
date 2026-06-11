@@ -1,0 +1,79 @@
+<div class="flex flex-col h-screen overflow-hidden relative">
+    <app-header></app-header>
+
+    <main class="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-14">
+        <router-outlet></router-outlet>
+    </main>
+</div>
+
+<!-- Feature Guide Overlay — shown once on first launch -->
+@if (showGuide) {
+  <div class="guide-overlay" (click)="$event.target === $event.currentTarget && dismissGuide()">
+    <div class="guide-modal">
+      <div class="guide-header">
+        <div class="guide-logo">⚡</div>
+        <h2 class="guide-title">Welcome to KrackAI</h2>
+        <p class="guide-subtitle">Master these shortcuts during your interview session</p>
+      </div>
+
+      <div class="guide-shortcuts">
+
+        <div class="shortcut-card accent-blue">
+          <div class="shortcut-keys">
+            <kbd>Space</kbd>
+          </div>
+          <div class="shortcut-info">
+            <span class="shortcut-name">Generate AI Answer</span>
+            <span class="shortcut-desc">Instantly generate a suggested answer from your transcription</span>
+          </div>
+        </div>
+
+        <div class="shortcut-card accent-purple">
+          <div class="shortcut-keys">
+            <kbd>Shift</kbd><span class="key-sep">×2</span>
+          </div>
+          <div class="shortcut-info">
+            <span class="shortcut-name">Clear Buffer</span>
+            <span class="shortcut-desc">Double-tap Shift to wipe the transcription buffer and start fresh</span>
+          </div>
+        </div>
+
+        <div class="shortcut-card accent-purple">
+          <div class="shortcut-keys">
+            <kbd>C</kbd><span class="key-sep">×2</span>
+          </div>
+          <div class="shortcut-info">
+            <span class="shortcut-name">Clear Buffer (Alt)</span>
+            <span class="shortcut-desc">Alternate shortcut — double-tap C to clear the transcription</span>
+          </div>
+        </div>
+
+        <div class="shortcut-card accent-orange">
+          <div class="shortcut-keys">
+            <kbd>Ctrl</kbd><span class="key-plus">+</span><kbd>Alt</kbd><span class="key-plus">+</span><kbd>B</kbd>
+          </div>
+          <div class="shortcut-info">
+            <span class="shortcut-name">BEHIND Mode</span>
+            <span class="shortcut-desc">App becomes click-through &amp; semi-transparent — interviewers can't see it</span>
+          </div>
+        </div>
+
+        <div class="shortcut-card accent-green">
+          <div class="shortcut-keys">
+            <kbd>Ctrl</kbd><span class="key-plus">+</span><kbd>Alt</kbd><span class="key-plus">+</span><kbd>K</kbd>
+          </div>
+          <div class="shortcut-info">
+            <span class="shortcut-name">Show / Hide App</span>
+            <span class="shortcut-desc">Toggle KrackAI on or off from anywhere, even while screen sharing</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="guide-footer">
+        <p class="guide-tip">💡 KrackAI runs silently in your system tray — right-click the tray icon to show or quit.</p>
+        <button class="guide-btn" (click)="dismissGuide()">Got it, let's go!</button>
+      </div>
+    </div>
+  </div>
+}

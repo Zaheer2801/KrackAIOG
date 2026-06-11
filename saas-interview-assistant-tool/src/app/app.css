@@ -1,0 +1,179 @@
+/* ── Feature Guide Overlay ── */
+.guide-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: guideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes guideIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.guide-modal {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 32px 80px rgba(59, 130, 246, 0.18), 0 0 0 1px rgba(99,102,241,0.08);
+  animation: modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlide {
+  from { transform: translateY(24px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.guide-header {
+  text-align: center;
+  padding: 36px 32px 24px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.guide-logo {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.guide-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.guide-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.guide-shortcuts {
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shortcut-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.85);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.shortcut-card:hover {
+  transform: translateX(4px);
+}
+
+.shortcut-card.accent-blue  { border-color: rgba(59,130,246,0.2);  background: rgba(239,246,255,0.9); }
+.shortcut-card.accent-purple{ border-color: rgba(139,92,246,0.2);  background: rgba(245,243,255,0.9); }
+.shortcut-card.accent-orange{ border-color: rgba(249,115,22,0.2);  background: rgba(255,247,237,0.9); }
+.shortcut-card.accent-green { border-color: rgba(16,185,129,0.2);  background: rgba(236,253,245,0.9); }
+
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 2px 0 rgba(100, 116, 139, 0.25);
+  white-space: nowrap;
+}
+
+.key-plus, .key-sep {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  user-select: none;
+}
+
+.shortcut-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shortcut-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.shortcut-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.guide-footer {
+  padding: 20px 28px 32px;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.guide-tip {
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+  margin: 0;
+  background: rgba(99,102,241,0.06);
+  border: 1px solid rgba(99,102,241,0.12);
+  border-radius: 10px;
+  padding: 10px 16px;
+  width: 100%;
+}
+
+.guide-btn {
+  padding: 12px 40px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.guide-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59,130,246,0.45);
+}
+
+.guide-btn:active {
+  transform: translateY(0);
+}

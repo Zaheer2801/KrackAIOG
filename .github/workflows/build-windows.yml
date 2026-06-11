@@ -1,0 +1,35 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: saas-interview-assistant-tool
+        run: npm ci
+
+      - name: Build Angular + Electron Windows installer
+        working-directory: saas-interview-assistant-tool
+        run: npm run electron:build
+
+      - name: Upload Windows installer to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.9
+          files: saas-interview-assistant-tool/release/*.exe
+          token: ${{ secrets.GITHUB_TOKEN }}

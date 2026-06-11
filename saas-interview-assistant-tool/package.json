@@ -1,0 +1,97 @@
+{
+  "name": "krackai",
+  "version": "1.0.20",
+  "main": "electron/main.js",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --host 0.0.0.0",
+    "dev": "concurrently \"npm start\" \"wait-on http://localhost:4200 && npm run electron:start\"",
+    "build": "ng build --configuration production",
+    "electron:start": "cross-env ELECTRON_RUN_AS_NODE= NODE_ENV=development electron .",
+    "electron:build": "npm run build && electron-builder"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "dependencies": {
+    "@angular/animations": "^20.3.6",
+    "@angular/common": "^20.2.0",
+    "@angular/compiler": "^20.2.0",
+    "@angular/core": "^20.2.0",
+    "@angular/forms": "^20.2.0",
+    "@angular/platform-browser": "^20.2.0",
+    "@angular/router": "^20.2.0",
+    "@emailjs/browser": "^4.4.1",
+    "@tailwindcss/postcss": "^4.1.14",
+    "@types/qrcode": "^1.5.6",
+    "jwt-decode": "^4.0.0",
+    "ngx-toastr": "^19.1.0",
+    "postcss": "^8.5.6",
+    "qrcode": "^1.5.4",
+    "rxjs": "~7.8.0",
+    "tailwindcss": "^4.1.14",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.2.2",
+    "@angular/cli": "^20.2.2",
+    "@angular/compiler-cli": "^20.2.0",
+    "@types/electron": "^1.4.38",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^24.8.1",
+    "concurrently": "^9.0.1",
+    "cross-env": "^10.1.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^26.0.12",
+    "jasmine-core": "~5.9.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "playwright-core": "^1.60.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.2",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.krackai.app",
+    "productName": "KrackAI",
+    "icon": "icons/icon_1024.png",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "icons/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "src/favicon.ico"
+    },
+    "nsis": {
+      "include": "build/installer.nsh",
+      "allowToChangeInstallationDirectory": false,
+      "oneClick": true,
+      "perMachine": false
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icons/icon.icns",
+      "category": "public.app-category.productivity"
+    }
+  }
+}

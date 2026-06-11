@@ -1,0 +1,41 @@
+<header
+  class="fixed top-0 left-0 right-0 h-14 bg-white/60 backdrop-blur-xl border-b border-gray-200/50 flex items-center justify-between pr-6 pl-20 z-50 shadow-sm"
+  style="app-region: drag;"
+>
+  <!-- Sleek macOS style control area with logo -->
+  <div class="flex items-center gap-3" style="app-region: no-drag;">
+    <!-- Simplified Apple-like icon constraint -->
+    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-[#0071e3] p-1 flex items-center justify-center shadow-md">
+      <img src="assets/images/krack.png" alt="Logo" class="w-full h-full object-contain filter drop-shadow-sm brightness-200 invert" />
+    </div>
+    <span class="text-lg font-agatic text-[#1d1d1f] tracking-tight cursor-pointer" (click)="onLogoClick()">Krack<span class="text-[#0071e3]">AI</span></span>
+  </div>
+
+  <!-- Central/Right Controls -->
+  <div class="flex items-center gap-6" style="app-region: no-drag;">
+    
+    <!-- Ultra-Sleek Transparency Slider -->
+    <div class="flex items-center gap-3 bg-white/40 border border-white/60 px-4 py-1.5 rounded-full shadow-sm">
+      <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Opacity</label>
+      <input 
+        type="range" 
+        min="0" 
+        max="100" 
+        value="100"
+        (input)="onOpacityChange($event)"
+        class="w-24 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0071e3]"
+      />
+    </div>
+
+    <!-- Screen-share protection toggle -->
+    <button
+      (click)="onToggle()"
+      class="px-5 py-1.5 rounded-full font-bold text-sm transition-all duration-300 shadow-md backdrop-blur-md border border-white/40 text-white hover:scale-105 hover:shadow-lg"
+      [class.bg-[#1d1d1f]]="!protectionEnabled"
+      [class.bg-[#0071e3]]="protectionEnabled"
+      [title]="protectionEnabled ? 'Currently HIDDEN from screen share — click to reveal' : 'Currently VISIBLE to screen share — click to hide'"
+    >
+      {{ protectionEnabled ? '🛡 HIDDEN' : '👁 VISIBLE' }}
+    </button>
+  </div>
+</header>

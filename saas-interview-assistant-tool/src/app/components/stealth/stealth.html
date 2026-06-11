@@ -1,0 +1,36 @@
+<div class="stealth-container min-h-screen p-5">
+
+  <!-- Not connected -->
+  @if (!isConnected) {
+    <div class="flex items-center justify-center pt-20 opacity-40">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
+        <span class="text-gray-500 text-xs tracking-widest uppercase font-bold">Connecting...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Connected, waiting for first answer -->
+  @if (isConnected && answers.length === 0) {
+    <div class="flex items-center justify-center pt-20 opacity-30">
+      <span class="text-gray-400 text-xs tracking-widest uppercase font-bold">Waiting for interview to start...</span>
+    </div>
+  }
+
+  <!-- Q&A feed — newest on top -->
+  <div class="space-y-8 pb-24 mt-2">
+    @for (ans of answers; track $index) {
+      <div class="animate-fade-in">
+        <!-- Question -->
+        @if (ans.q) {
+          <div class="mb-3 px-3 py-2 bg-white/5 border-l-2 border-blue-400/60 rounded-r-xl">
+            <p class="text-blue-300 text-sm font-bold tracking-wide leading-relaxed">{{ ans.q }}</p>
+          </div>
+        }
+        <!-- Answer -->
+        <p class="text-gray-100 text-base leading-relaxed whitespace-pre-wrap font-medium">{{ ans.a }}</p>
+      </div>
+    }
+  </div>
+
+</div>

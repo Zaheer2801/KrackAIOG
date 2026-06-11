@@ -1,0 +1,180 @@
+<div class="flex min-h-[calc(100vh-3.5rem)] text-[#1d1d1f] transition-all">
+    <!-- Sidebar: Frosty Glass Pane -->
+    <aside class="hidden lg:flex lg:flex-col lg:w-64 apple-glass border-r border-gray-200/50">
+        <!-- Branding Context / Sidebar Top -->
+        <div class="p-6 pb-2">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-[#0071e3] p-1.5 flex items-center justify-center text-xl shadow-md">
+                    <img src="assets/images/krack.png" alt="Logo" class="w-full h-full object-contain filter drop-shadow-sm brightness-200 invert" />
+                </div>
+                <div>
+                    <h2 class="font-bold text-sm text-[#1d1d1f] tracking-tight">KrackAI</h2>
+                    <p class="text-[10px] text-gray-500 font-medium uppercase tracking-widest">Workspace</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+            <a [routerLink]="['/dashboard']"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#0071e3] text-white transition-all font-bold shadow-md hover:scale-105">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Dashboard
+            </a>
+
+            <a [routerLink]="['/interview']"
+                class="flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-gray-500 hover:text-[#0071e3] hover:bg-white/60 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4l3 3" />
+                </svg>
+                <span>Start Interview</span>
+            </a>
+
+            <a [routerLink]="['/myinterviews']"
+                class="flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-gray-500 hover:text-[#0071e3] hover:bg-white/60 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                <span>My Interviews</span>
+            </a>
+
+            <a [routerLink]="['/support']"
+                class="flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-gray-500 hover:text-[#0071e3] hover:bg-white/60 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span>Support</span>
+            </a>
+            
+            <div class="h-4"></div>
+
+            @if(user?.role === 'admin') {
+            <a routerLink="/admin"
+                class="flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 font-bold transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Admin Panel
+            </a>
+            }
+        </nav>
+
+        <!-- Bottom Profile Widget -->
+        <div class="p-6 mt-auto">
+            <div class="flex items-center gap-3 p-3 bg-white/40 border border-white/60 rounded-2xl shadow-sm">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-[#0071e3] flex items-center justify-center text-white font-bold shadow-md">
+                    {{ abbrev }}
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <h3 class="text-sm font-bold text-[#1d1d1f] truncate">{{ user?.passcode || 'Loading...' }}</h3>
+                    <p class="text-[10px] text-gray-500 font-medium truncate">Role: {{ user?.role || 'user' }}</p>
+                </div>
+            </div>
+            <button (click)="onLogout()"
+                class="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-200/50 hover:bg-white/60 transition-all text-sm text-gray-500 hover:text-[#0071e3] font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Log out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 overflow-y-auto">
+        <!-- Glass Pane Container -->
+        <div class="w-full max-w-4xl mx-auto space-y-6 lg:space-y-8 animate-fade-in">
+            <!-- Header Greeting -->
+            <div class="mb-10 text-center lg:text-left">
+                <h1 class="font-agatic text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-3 uppercase">Welcome Back, {{ user?.passcode?.substring(0, 5) || '' }}!</h1>
+                <p class="text-gray-500 font-medium text-lg tracking-wide">Ssh! Your secret interview weapon is ready 🤫</p>
+            </div>
+
+            <!-- High-End Glass Grid (Status & Metrics) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <div class="apple-glass rounded-3xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Access Status</h3>
+                        <span class="px-3 py-1 bg-blue-600/10 text-[#0071e3] border border-[#0071e3]/20 text-[10px] uppercase font-bold rounded-full tracking-wider">Unlimited</span>
+                    </div>
+                    <p class="text-[#1d1d1f] font-medium text-md leading-relaxed mt-4">
+                        System usage is unmetered for internal users.
+                    </p>
+                </div>
+
+                <div class="apple-glass rounded-3xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Interviews This Month</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-4">
+                        <span class="font-agatic text-5xl font-bold tracking-tighter text-[#1d1d1f]">{{monthlySessionsCount}}</span>
+                        <span class="text-gray-500 font-medium">interview sessions.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Action Hub -->
+            <div class="apple-glass rounded-3xl p-6 sm:p-10 mb-8 border-t border-white/60">
+                <h2 class="text-2xl font-agatic font-bold text-[#1d1d1f] mb-8 text-center tracking-tight">Launch your next interview session</h2>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
+                    <button (click)="startInterview()"
+                        class="flex-1 flex cursor-pointer items-center justify-center gap-3 px-8 py-4 bg-[#0071e3] hover:bg-blue-600 text-white font-bold rounded-2xl transition-all shadow-[0_4px_14px_rgba(0,113,227,0.4)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.6)] hover:-translate-y-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 8v4l3 3" />
+                        </svg>
+                        START INTERVIEW
+                    </button>
+                    <button
+                        class="flex-1 flex cursor-pointer items-center justify-center gap-3 px-8 py-4 bg-white/40 hover:bg-white/80 text-[#1d1d1f] font-bold rounded-2xl transition-all border border-gray-200/50 backdrop-blur-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                        </svg>
+                        View Tutorials
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="apple-glass rounded-3xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-sm font-bold text-gray-400 uppercase tracking-widest pl-2">Your Latest Interview Sessions</h2>
+                </div>
+                <div class="space-y-4">
+                    @for (session of recentSessions; track $index) {
+                    <div class="flex items-center gap-4 p-5 bg-white/40 hover:bg-white/60 rounded-2xl transition-all border border-gray-200/50 shadow-sm cursor-pointer group">
+                        <div class="shrink-0 w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[#1d1d1f] font-bold text-sm sm:text-base">{{ session.date | date }}</p>
+                            <p class="text-gray-500 font-medium text-xs sm:text-sm">{{ formatTime(session.timeTaken) }} elapsed</p>
+                        </div>
+                        <span class="shrink-0 px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 text-[#0071e3] text-xs font-bold uppercase rounded-full">
+                            {{session.status}}
+                        </span>
+                    </div>
+                    }@empty {
+                    <div class="text-gray-400 font-medium text-center py-10 px-4 bg-white/20 rounded-2xl border border-dashed border-gray-200/50 backdrop-blur-md">
+                        You have no interview sessions yet.
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

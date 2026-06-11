@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npx ng build --configuration web",
+  "outputDirectory": "dist/saas-interview-assistant-tool/browser",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

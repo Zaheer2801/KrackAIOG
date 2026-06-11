@@ -1,0 +1,112 @@
+<div class="min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center px-4 py-8 bg-white/20 backdrop-blur-xl gap-10">
+    <div class="w-full max-w-md apple-glass rounded-3xl overflow-hidden mt-6">
+        <div class="bg-white/40 border-b border-gray-200/50 px-6 sm:px-8 pt-8 sm:pt-10 pb-6 sm:pb-8 text-center backdrop-blur-md">
+            <h1 class="font-agatic text-3xl sm:text-4xl font-bold text-[#1d1d1f] mb-2 sm:mb-3 tracking-tight">Krack<span class="text-[#0071e3]">AI</span></h1>
+            <p class="text-gray-500 font-medium text-sm sm:text-base">
+                {{ mode === 'login' ? 'Sign in with your team access code' : 'Request Access Code' }}
+            </p>
+        </div>
+        <div class="px-6 sm:px-8 py-6 sm:py-8 bg-white/20 backdrop-blur-lg">
+            
+            <!-- Mode Switcher Buttons -->
+            <div class="flex flex-col sm:flex-row gap-2 mb-6 bg-gray-200/50 p-1 rounded-xl shadow-inner backdrop-blur-sm">
+                <button (click)="mode = 'login'"
+                    [class.bg-white]="mode === 'login'" [class.text-[#1d1d1f]]="mode === 'login'" [class.shadow-sm]="mode === 'login'"
+                    [class.text-gray-500]="mode !== 'login'"
+                    class="flex-1 py-2 px-2 text-xs sm:text-sm font-bold rounded-lg transition-all text-center tracking-wide">
+                    Login
+                </button>
+                <button (click)="mode = 'request'"
+                    [class.bg-white]="mode === 'request'" [class.text-[#1d1d1f]]="mode === 'request'" [class.shadow-sm]="mode === 'request'"
+                    [class.text-gray-500]="mode !== 'request'"
+                    class="flex-1 py-2 px-2 text-xs sm:text-sm font-bold rounded-lg transition-all text-center tracking-wide">
+                    Request Access
+                </button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form *ngIf="mode === 'login'" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="mb-6">
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest pl-1">Access Code</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <input type="text" formControlName="passcode" placeholder="e.g. ZAHEER2025" class="font-medium w-full bg-white/80 text-[#1d1d1f] placeholder-gray-400 border border-white rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/20 shadow-sm backdrop-blur-md transition-all duration-300" [class.border-red-500]="loginForm.get('passcode')?.invalid && loginForm.get('passcode')?.touched">
+                    </div>
+                </div>
+                <button type="submit" [disabled]="loginForm.invalid" [class.opacity-50]="loginForm.invalid" class="w-full bg-[#0071e3] hover:bg-blue-600 text-white font-bold py-4 rounded-xl tracking-wider transition-all duration-300 shadow-[0_4px_14px_rgba(0,113,227,0.3)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.5)]">
+                    Continue
+                </button>
+            </form>
+
+            <!-- REQUEST FORM -->
+            <form *ngIf="mode === 'request'" [formGroup]="requestForm" (ngSubmit)="onRequestSubmit()">
+                <div class="mb-4">
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest pl-1">Full Name</label>
+                    <input type="text" formControlName="fullName" class="font-medium w-full bg-white/80 text-[#1d1d1f] placeholder-gray-400 border border-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/20 shadow-sm backdrop-blur-md transition-all" [class.border-red-500]="requestForm.get('fullName')?.invalid && requestForm.get('fullName')?.touched">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest pl-1">Email Address</label>
+                    <input type="email" formControlName="email" class="font-medium w-full bg-white/80 text-[#1d1d1f] placeholder-gray-400 border border-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/20 shadow-sm backdrop-blur-md transition-all" [class.border-red-500]="requestForm.get('email')?.invalid && requestForm.get('email')?.touched">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest pl-1">Phone Number</label>
+                    <input type="tel" formControlName="phoneNumber" class="font-medium w-full bg-white/80 text-[#1d1d1f] placeholder-gray-400 border border-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/20 shadow-sm backdrop-blur-md transition-all" [class.border-red-500]="requestForm.get('phoneNumber')?.invalid && requestForm.get('phoneNumber')?.touched">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest pl-1">Duration Needed</label>
+                    <select formControlName="duration" class="font-medium w-full bg-white/80 text-[#1d1d1f] border border-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/20 shadow-sm backdrop-blur-md transition-all">
+                        <option value="30">30 Minutes</option>
+                        <option value="60">60 Minutes</option>
+                        <option value="120">120 Minutes</option>
+                        <option value="180">180 Minutes</option>
+                        <option value="Unlimited">Unlimited</option>
+                    </select>
+                </div>
+                <button type="submit" [disabled]="requestForm.invalid" [class.opacity-50]="requestForm.invalid" class="w-full bg-[#0071e3] hover:bg-blue-600 text-white font-bold py-4 rounded-xl tracking-wider transition-all duration-300 shadow-[0_4px_14px_rgba(0,113,227,0.3)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.5)]">
+                    Submit Request
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="w-full max-w-3xl">
+        <h2 class="text-center text-[#1d1d1f] font-bold text-xl mb-6 tracking-tight">How It Works</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="apple-glass rounded-2xl p-4 text-center flex flex-col items-center gap-2">
+                <div class="w-10 h-10 bg-blue-50 border border-blue-200/60 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </div>
+                <p class="text-xs font-bold text-[#1d1d1f] tracking-wide">1. Download App</p>
+                <p class="text-xs text-gray-500">Get the .exe from krackai.org</p>
+            </div>
+            <div class="apple-glass rounded-2xl p-4 text-center flex flex-col items-center gap-2">
+                <div class="w-10 h-10 bg-violet-50 border border-violet-200/60 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                </div>
+                <p class="text-xs font-bold text-[#1d1d1f] tracking-wide">2. Enter Access Code</p>
+                <p class="text-xs text-gray-500">Use the code sent by our team</p>
+            </div>
+            <div class="apple-glass rounded-2xl p-4 text-center flex flex-col items-center gap-2">
+                <div class="w-10 h-10 bg-emerald-50 border border-emerald-200/60 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <p class="text-xs font-bold text-[#1d1d1f] tracking-wide">3. Upload Resume</p>
+                <p class="text-xs text-gray-500">AI learns your experience & voice</p>
+            </div>
+            <div class="apple-glass rounded-2xl p-4 text-center flex flex-col items-center gap-2">
+                <div class="w-10 h-10 bg-orange-50 border border-orange-200/60 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <p class="text-xs font-bold text-[#1d1d1f] tracking-wide">4. Get Live Answers</p>
+                <p class="text-xs text-gray-500">AI answers as the interview happens</p>
+            </div>
+        </div>
+        <p class="text-center text-xs text-gray-400 mt-4">First 15 minutes free · No web version · Desktop only</p>
+    </div>
+</div>

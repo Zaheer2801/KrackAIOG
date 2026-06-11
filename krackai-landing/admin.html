@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KrackAI — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f1a; --surface: #16162a; --surface2: #1e1e35;
+      --border: rgba(255,255,255,0.07); --text: #f0f0ff; --muted: #8888aa;
+      --accent: #6366f1; --accent2: #818cf8; --green: #10b981;
+      --red: #ef4444; --orange: #f97316; --yellow: #fbbf24; --blue: #3b82f6;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* LOGIN */
+    #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(ellipse at 60% 30%, rgba(99,102,241,0.18) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(16,185,129,0.1) 0%, transparent 50%), var(--bg); }
+    .login-card { background:rgba(22,22,42,0.95); border:1px solid rgba(99,102,241,0.25); border-radius:24px;
+      padding:3rem 2.5rem; width:100%; max-width:400px; box-shadow:0 0 60px rgba(99,102,241,0.15),0 40px 80px rgba(0,0,0,0.4); }
+    .login-logo { font-size:1.8rem; font-weight:900; letter-spacing:-1px; margin-bottom:0.25rem;
+      background:linear-gradient(135deg,#fff,#a5b4fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .login-badge { display:inline-block; font-size:0.65rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+      background:rgba(99,102,241,0.2); color:var(--accent2); border:1px solid rgba(99,102,241,0.3);
+      padding:0.25rem 0.75rem; border-radius:99px; margin-bottom:1.75rem; }
+    .login-card h2 { font-size:1.2rem; font-weight:700; margin-bottom:0.35rem; }
+    .login-card p { font-size:0.82rem; color:var(--muted); margin-bottom:1.75rem; }
+    .field { width:100%; padding:0.85rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px; font-size:1rem; font-weight:600; letter-spacing:0.12em; text-align:center;
+      color:var(--text); outline:none; font-family:'Inter',monospace; transition:border-color 0.2s,box-shadow 0.2s; margin-bottom:0.75rem; }
+    .field:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.2); }
+    .btn { width:100%; padding:0.9rem; background:linear-gradient(135deg,var(--accent),#4f46e5); color:#fff;
+      border:none; border-radius:12px; font-size:0.95rem; font-weight:700; cursor:pointer;
+      transition:opacity 0.2s,transform 0.1s; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+    .btn:hover { opacity:0.9; } .btn:active { transform:scale(0.98); } .btn:disabled { opacity:0.5; cursor:not-allowed; }
+    .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff;
+      border-radius:50%; animation:spin 0.7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .error-msg { color:var(--red); font-size:0.8rem; text-align:center; margin-bottom:0.75rem; display:none; }
+
+    /* SHELL */
+    #admin-shell { display:none; min-height:100vh; flex-direction:column; }
+    #admin-shell.show { display:flex; }
+    header { background:rgba(15,15,26,0.9); backdrop-filter:blur(20px); border-bottom:1px solid var(--border);
+      padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+    .header-logo { font-size:1.1rem; font-weight:900; letter-spacing:-0.5px;
+      background:linear-gradient(135deg,#fff,#a5b4fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .header-right { display:flex; align-items:center; gap:1rem; }
+    .admin-badge { font-size:0.62rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+      background:rgba(99,102,241,0.15); color:var(--accent2); border:1px solid rgba(99,102,241,0.25); padding:0.25rem 0.75rem; border-radius:99px; }
+    .logout-btn { font-size:0.8rem; font-weight:600; color:var(--muted); background:none; border:1px solid var(--border);
+      border-radius:8px; padding:0.35rem 0.85rem; cursor:pointer; transition:color 0.2s,border-color 0.2s; }
+    .logout-btn:hover { color:var(--red); border-color:var(--red); }
+    .main { flex:1; padding:2rem; max-width:1300px; margin:0 auto; width:100%; }
+
+    /* STATS */
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.5rem; position:relative; overflow:hidden; }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    .stat-card.blue::before   { background:linear-gradient(90deg,var(--blue),var(--accent)); }
+    .stat-card.green::before  { background:linear-gradient(90deg,var(--green),#34d399); }
+    .stat-card.red::before    { background:linear-gradient(90deg,var(--red),#f87171); }
+    .stat-card.orange::before { background:linear-gradient(90deg,var(--orange),var(--yellow)); }
+    .stat-card.purple::before { background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+    .stat-glow { position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:0.08; filter:blur(20px); }
+    .stat-card.blue   .stat-glow { background:var(--blue); }
+    .stat-card.green  .stat-glow { background:var(--green); }
+    .stat-card.red    .stat-glow { background:var(--red); }
+    .stat-card.orange .stat-glow { background:var(--orange); }
+    .stat-card.purple .stat-glow { background:var(--accent); }
+    .stat-label { font-size:0.7rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+    .stat-value { font-size:2.2rem; font-weight:900; letter-spacing:-2px; }
+    .stat-card.blue   .stat-value { color:var(--blue); }
+    .stat-card.green  .stat-value { color:var(--green); }
+    .stat-card.red    .stat-value { color:var(--red); }
+    .stat-card.orange .stat-value { color:var(--orange); }
+    .stat-card.purple .stat-value { color:var(--accent2); }
+
+    /* TABS */
+    .tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:0; }
+    .tab { padding:0.65rem 1.4rem; border-radius:10px 10px 0 0; font-size:0.85rem; font-weight:600;
+      cursor:pointer; color:var(--muted); transition:all 0.2s; border:1px solid transparent; border-bottom:none; margin-bottom:-1px; }
+    .tab:hover { color:var(--text); }
+    .tab.active { background:var(--surface); color:var(--accent2); border-color:var(--border); }
+    .tab-panel { display:none; } .tab-panel.active { display:block; }
+
+    /* SECTION / TABLE */
+    .section { background:var(--surface); border:1px solid var(--border); border-radius:18px; overflow:hidden; margin-bottom:1.5rem; }
+    .section-header { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .section-title { font-size:0.95rem; font-weight:700; }
+    .section-sub { font-size:0.75rem; color:var(--muted); margin-top:0.15rem; }
+    table { width:100%; border-collapse:collapse; }
+    th { padding:0.75rem 1rem; text-align:left; font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--muted); background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border); }
+    td { padding:0.85rem 1rem; font-size:0.82rem; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; color:var(--text); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(99,102,241,0.04); }
+
+    .badge { display:inline-block; padding:0.2rem 0.6rem; border-radius:99px; font-size:0.67rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; }
+    .badge-pending  { background:rgba(251,191,36,0.15);  color:#fbbf24; border:1px solid rgba(251,191,36,0.25); }
+    .badge-approved { background:rgba(16,185,129,0.12);  color:#34d399; border:1px solid rgba(16,185,129,0.25); }
+    .badge-rejected { background:rgba(239,68,68,0.12);   color:#f87171; border:1px solid rgba(239,68,68,0.25); }
+    .badge-done     { background:rgba(16,185,129,0.12);  color:#34d399; border:1px solid rgba(16,185,129,0.25); }
+    .badge-free     { background:rgba(99,102,241,0.12);  color:#a5b4fc; border:1px solid rgba(99,102,241,0.25); }
+    .badge-pro      { background:rgba(251,191,36,0.12);  color:#fcd34d; border:1px solid rgba(251,191,36,0.25); }
+    .badge-basic    { background:rgba(59,130,246,0.12);  color:#93c5fd; border:1px solid rgba(59,130,246,0.25); }
+    .code-display { font-family:monospace; font-weight:700; font-size:0.88rem; background:rgba(99,102,241,0.12);
+      color:var(--accent2); padding:0.2rem 0.6rem; border-radius:6px; border:1px solid rgba(99,102,241,0.2); letter-spacing:0.1em; }
+
+    .btn-sm { padding:0.32rem 0.75rem; border-radius:7px; border:none; font-size:0.72rem; font-weight:700; cursor:pointer; transition:opacity 0.2s,transform 0.1s; white-space:nowrap; }
+    .btn-sm:hover { opacity:0.85; } .btn-sm:active { transform:scale(0.97); }
+    .btn-green  { background:rgba(16,185,129,0.2);  color:var(--green);   border:1px solid rgba(16,185,129,0.3); }
+    .btn-red    { background:rgba(239,68,68,0.15);  color:var(--red);     border:1px solid rgba(239,68,68,0.25); }
+    .btn-blue   { background:rgba(59,130,246,0.15); color:var(--blue);    border:1px solid rgba(59,130,246,0.25); }
+    .btn-purple { background:rgba(99,102,241,0.2);  color:var(--accent2); border:1px solid rgba(99,102,241,0.3); }
+    .btn-orange { background:rgba(249,115,22,0.15); color:var(--orange);  border:1px solid rgba(249,115,22,0.25); }
+    .actions-cell { display:flex; gap:0.35rem; flex-wrap:wrap; }
+
+    .empty-state { text-align:center; padding:3rem 2rem; color:var(--muted); font-size:0.85rem; }
+    .empty-state .icon { font-size:2.5rem; margin-bottom:0.75rem; }
+
+    /* CREATE FORM */
+    .create-form { background:var(--surface); border:1px solid rgba(99,102,241,0.2); border-radius:18px; padding:1.5rem; margin-bottom:1.5rem; position:relative; overflow:hidden; }
+    .create-form::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),#818cf8,var(--green)); }
+    .create-form h3 { font-size:0.95rem; font-weight:700; margin-bottom:1.25rem; }
+    .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; margin-bottom:1.25rem; }
+    .form-group { display:flex; flex-direction:column; gap:0.4rem; }
+    .form-group label { font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+    .form-input { padding:0.65rem 0.9rem; border:1px solid var(--border); border-radius:10px; font-size:0.85rem;
+      font-family:'Inter',sans-serif; outline:none; background:rgba(255,255,255,0.04); color:var(--text); transition:border-color 0.2s,box-shadow 0.2s; }
+    .form-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+    .form-input option { background:#1e1e35; }
+    .form-row { display:flex; gap:0.5rem; align-items:center; }
+
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px);
+      display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+    .modal-overlay.show { opacity:1; pointer-events:all; }
+    .modal { background:var(--surface2); border:1px solid rgba(99,102,241,0.25); border-radius:20px; padding:2rem;
+      width:100%; max-width:520px; box-shadow:0 40px 80px rgba(0,0,0,0.5); transform:translateY(20px); transition:transform 0.2s; max-height:90vh; overflow-y:auto; }
+    .modal-overlay.show .modal { transform:translateY(0); }
+    .modal h3 { font-size:1.05rem; font-weight:700; margin-bottom:0.35rem; }
+    .modal-sub { font-size:0.8rem; color:var(--muted); margin-bottom:1.5rem; }
+    .modal-info { background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:0.75rem 1rem; margin-bottom:1.25rem; font-size:0.82rem; }
+    .modal-info strong { color:var(--accent2); }
+    .modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; margin-bottom:1.25rem; }
+    .modal-grid.three { grid-template-columns:1fr 1fr 1fr; }
+    .modal-actions { display:flex; gap:0.75rem; justify-content:flex-end; margin-top:1.25rem; }
+    .col-full { grid-column:1/-1; }
+
+    /* USER PROFILE */
+    .profile-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+    .profile-avatar { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:800; color:#fff; flex-shrink:0; }
+    .profile-name { font-size:1.1rem; font-weight:700; }
+    .profile-email { font-size:0.8rem; color:var(--muted); margin-top:0.1rem; }
+    .profile-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.5rem; }
+    .profile-stat { background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.15); border-radius:12px; padding:0.85rem; text-align:center; }
+    .profile-stat-val { font-size:1.5rem; font-weight:800; color:var(--accent2); letter-spacing:-1px; }
+    .profile-stat-lbl { font-size:0.65rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-top:0.2rem; }
+    .interview-log { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; }
+    .interview-row { padding:0.85rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .interview-row:last-child { border-bottom:none; }
+    .interview-date { font-size:0.8rem; color:var(--muted); }
+    .interview-meta { font-size:0.82rem; }
+
+    /* TOAST */
+    .toast { position:fixed; bottom:2rem; right:2rem; z-index:9999; padding:0.85rem 1.25rem; border-radius:12px;
+      font-size:0.85rem; font-weight:600; background:var(--surface2); color:var(--text); border:1px solid var(--border);
+      box-shadow:0 8px 30px rgba(0,0,0,0.4); transform:translateY(20px); opacity:0; transition:all 0.3s; pointer-events:none; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(16,185,129,0.3); color:#34d399; }
+    .toast.error   { border-color:rgba(239,68,68,0.3);  color:#f87171; }
+
+    input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(1); opacity:0.4; cursor:pointer; }
+    ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:3px; }
+    .revenue-highlight { font-weight:700; color:var(--green); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">KrackAI</div>
+    <div class="login-badge">Admin Portal</div>
+    <h2>Welcome back</h2>
+    <p>Enter your admin passcode to access the dashboard.</p>
+    <input class="field" id="admin-code" type="text" placeholder="Admin passcode"
+      autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" />
+    <div class="error-msg" id="login-error">Invalid passcode. Try again.</div>
+    <button class="btn" id="login-btn" onclick="adminLogin()">
+      <span id="login-btn-text">Sign In</span>
+      <div class="spinner" id="login-spinner" style="display:none;"></div>
+    </button>
+  </div>
+</div>
+
+<!-- ADMIN SHELL -->
+<div id="admin-shell">
+  <header>
+    <div class="header-logo">KrackAI</div>
+    <div class="header-right">
+      <div class="admin-badge">Admin</div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="stats">
+      <div class="stat-card blue"><div class="stat-glow"></div><div class="stat-label">Pending Requests</div><div class="stat-value" id="stat-pending">—</div></div>
+      <div class="stat-card green"><div class="stat-glow"></div><div class="stat-label">Approved</div><div class="stat-value" id="stat-approved">—</div></div>
+      <div class="stat-card red"><div class="stat-glow"></div><div class="stat-label">Rejected</div><div class="stat-value" id="stat-rejected">—</div></div>
+      <div class="stat-card orange"><div class="stat-glow"></div><div class="stat-label">Total Users</div><div class="stat-value" id="stat-users">—</div></div>
+      <div class="stat-card purple"><div class="stat-glow"></div><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('requests')">📋 Access Requests</div>
+      <div class="tab" onclick="switchTab('users')">👥 Users & Codes</div>
+    </div>
+
+    <!-- REQUESTS TAB -->
+    <div class="tab-panel active" id="tab-requests">
+      <div class="section">
+        <div class="section-header">
+          <div><div class="section-title">Access Requests</div><div class="section-sub">Manage all incoming requests</div></div>
+          <button class="btn-sm btn-blue" onclick="loadRequests()">↻ Refresh</button>
+        </div>
+        <div id="requests-body"><div class="empty-state"><div class="icon">⏳</div>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div class="tab-panel" id="tab-users">
+      <div class="create-form">
+        <h3>➕ Create Access Code</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Label / Name</label><input class="form-input" id="cf-label" type="text" placeholder="e.g. John Doe" autocomplete="off" /></div>
+          <div class="form-group"><label>Access Code</label>
+            <div class="form-row">
+              <input class="form-input" id="cf-code" type="text" placeholder="Auto-generate" style="flex:1;" autocomplete="off" autocapitalize="none" />
+              <button class="btn-sm btn-purple" onclick="generateCode()">🎲</button>
+            </div>
+          </div>
+          <div class="form-group"><label>Tier</label>
+            <select class="form-input" id="cf-tier"><option value="free">Free</option><option value="basic">Basic</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option></select>
+          </div>
+          <div class="form-group"><label>Duration (minutes)</label><input class="form-input" id="cf-minutes" type="number" placeholder="e.g. 600" min="1" /></div>
+          <div class="form-group"><label>Expiry Date</label><input class="form-input" id="cf-expiry" type="date" /></div>
+          <div class="form-group"><label>Recurring</label>
+            <select class="form-input" id="cf-recurring"><option value="none">No recurring</option><option value="weekly">Weekly reset</option><option value="monthly">Monthly reset</option></select>
+          </div>
+        </div>
+        <button class="btn-sm btn-green" onclick="createCode()" style="padding:0.6rem 1.5rem;font-size:0.82rem;">✅ Create Code</button>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div><div class="section-title">Users & Access Codes</div><div class="section-sub">Click a row to view profile & interview logs</div></div>
+          <button class="btn-sm btn-blue" onclick="loadUsers()">↻ Refresh</button>
+        </div>
+        <div id="users-body"><div class="empty-state"><div class="icon">⏳</div>Loading...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROVE MODAL -->
+<div class="modal-overlay" id="approve-modal">
+  <div class="modal">
+    <h3>✅ Approve Request</h3>
+    <p class="modal-sub">Set access details before sending the approval email.</p>
+    <div class="modal-info" id="approve-user-info"></div>
+    <div class="modal-grid">
+      <div class="form-group"><label>Tier</label>
+        <select class="form-input" id="m-tier"><option value="free">Free</option><option value="basic">Basic</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option></select>
+      </div>
+      <div class="form-group"><label>Duration (minutes)</label><input class="form-input" id="m-minutes" type="number" placeholder="e.g. 600" min="1" value="60" /></div>
+      <div class="form-group col-full"><label>Expiry Date (optional)</label><input class="form-input" id="m-expiry" type="date" /></div>
+      <div class="form-group col-full">
+        <label>Access Code</label>
+        <div style="display:flex;gap:0.5rem;">
+          <input class="form-input" id="m-passcode" type="text" placeholder="Auto-generated or enter custom" style="flex:1;font-family:monospace;letter-spacing:2px;font-weight:700;" maxlength="12" />
+          <button class="btn-sm btn-purple" onclick="generateApproveCode()" style="white-space:nowrap;padding:0 1rem;">🎲 Generate</button>
+        </div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">This code will be emailed to the user. You can customize it or leave blank to auto-generate.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-red" onclick="closeModal('approve-modal')" style="padding:0.6rem 1.1rem;">Cancel</button>
+      <button class="btn-sm btn-green" onclick="confirmApprove()" id="confirm-approve-btn" style="padding:0.6rem 1.1rem;">✉️ Send Approval & Code →</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT REQUEST MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>✏️ Edit Request</h3>
+    <p class="modal-sub">Correct any details on this request.</p>
+    <input type="hidden" id="edit-id" />
+    <div class="modal-grid">
+      <div class="form-group"><label>Full Name</label><input class="form-input" id="e-name" type="text" /></div>
+      <div class="form-group"><label>Email</label><input class="form-input" id="e-email" type="email" /></div>
+      <div class="form-group"><label>Phone</label><input class="form-input" id="e-phone" type="text" /></div>
+      <div class="form-group"><label>Duration (mins, 0–180)</label><input class="form-input" id="e-duration" type="number" min="0" max="180" placeholder="e.g. 60" /></div>
+      <div class="form-group"><label>Payment Status</label>
+        <select class="form-input" id="e-pay-status"><option value="pending">Pending</option><option value="done">Done</option><option value="free">Free</option></select>
+      </div>
+      <div class="form-group"><label>Amount Paid (£)</label><input class="form-input" id="e-amount" type="number" min="0" step="0.01" placeholder="0.00" /></div>
+      <div class="form-group col-full"><label>Notes</label><input class="form-input" id="e-notes" type="text" placeholder="Internal admin notes..." /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-red" onclick="closeModal('edit-modal')" style="padding:0.6rem 1.1rem;">Cancel</button>
+      <button class="btn-sm btn-blue" onclick="saveEdit()" style="padding:0.6rem 1.1rem;">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal" style="max-width:600px;">
+    <h3>👤 User Profile</h3>
+    <p class="modal-sub">Interview history and account details.</p>
+    <div id="profile-content"><div class="empty-state"><div class="icon">⏳</div>Loading...</div></div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-purple" id="reset-device-btn" onclick="resetDevice()" style="padding:0.6rem 1.1rem;">🔄 Reset Device</button>
+      <button class="btn-sm btn-red" onclick="closeModal('profile-modal')" style="padding:0.6rem 1.1rem;">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'https://krackai-api.onrender.com';
+  let token = localStorage.getItem('krackai_admin_token');
+  let pendingApproveId = null;
+
+  if (token) showShell();
+
+  document.getElementById('admin-code').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
+
+  async function adminLogin() {
+    const code = document.getElementById('admin-code').value.trim();
+    if (!code) return;
+    const btn = document.getElementById('login-btn'), txt = document.getElementById('login-btn-text');
+    const sp = document.getElementById('login-spinner'), err = document.getElementById('login-error');
+    btn.disabled = true; txt.style.display = 'none'; sp.style.display = 'block'; err.style.display = 'none';
+    try {
+      const r = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ passcode: code }) });
+      const d = await r.json();
+      if (!r.ok || !d.token) { err.style.display = 'block'; btn.disabled=false; txt.style.display='inline'; sp.style.display='none'; return; }
+      if (d.user?.role !== 'admin') { err.textContent='Not an admin account.'; err.style.display='block'; btn.disabled=false; txt.style.display='inline'; sp.style.display='none'; return; }
+      token = d.token; localStorage.setItem('krackai_admin_token', token); showShell();
+    } catch { err.textContent='Connection error.'; err.style.display='block'; btn.disabled=false; txt.style.display='inline'; sp.style.display='none'; }
+  }
+
+  function showShell() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-shell').style.display = 'flex';
+    loadRequests(); loadStats();
+  }
+
+  function logout() { localStorage.removeItem('krackai_admin_token'); token = null; location.reload(); }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['requests','users'][i] === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${name}`).classList.add('active');
+    if (name === 'users') loadUsers();
+  }
+
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.className = `toast ${type} show`;
+    setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  async function authFetch(path, opts = {}) {
+    return fetch(`${API}${path}`, { ...opts, headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}`, ...(opts.headers||{}) }, body: opts.body });
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  // ── STATS ──
+  async function loadStats() {
+    try {
+      const [rr, ru] = await Promise.all([authFetch('/admin/access-requests'), authFetch('/admin/passcodes')]);
+      const rd = await rr.json(), ud = await ru.json();
+      const reqs = rd.requests || [];
+      const users = ud.passcodes || ud || [];
+      document.getElementById('stat-pending').textContent  = reqs.filter(r => r.status==='pending').length;
+      document.getElementById('stat-approved').textContent = reqs.filter(r => r.status==='approved').length;
+      document.getElementById('stat-rejected').textContent = reqs.filter(r => r.status==='rejected').length;
+      document.getElementById('stat-users').textContent    = users.length;
+      const revenue = reqs.reduce((s, r) => s + (r.amountPaid || 0), 0);
+      document.getElementById('stat-revenue').textContent  = `£${revenue.toFixed(0)}`;
+    } catch {}
+  }
+
+  // ── REQUESTS ──
+  async function loadRequests() {
+    const body = document.getElementById('requests-body');
+    body.innerHTML = '<div class="empty-state"><div class="icon">⏳</div>Loading...</div>';
+    try {
+      const r = await authFetch('/admin/access-requests');
+      const d = await r.json();
+      const reqs = d.requests || [];
+      if (!reqs.length) { body.innerHTML = '<div class="empty-state"><div class="icon">📭</div>No requests yet</div>'; return; }
+      body.innerHTML = `<div style="overflow-x:auto;"><table>
+        <thead><tr>
+          <th>Name</th><th>Email</th><th>Phone</th><th>Duration</th>
+          <th>Payment</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th>
+        </tr></thead>
+        <tbody>${reqs.map(r => `
+          <tr>
+            <td><strong>${esc(r.fullName)}</strong>${r.notes ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem;">${esc(r.notes)}</div>` : ''}</td>
+            <td>${esc(r.email)}</td>
+            <td>${esc(r.phoneNumber)}</td>
+            <td>${esc(r.duration)}</td>
+            <td><span class="badge badge-${r.paymentStatus||'pending'}">${r.paymentStatus||'pending'}</span></td>
+            <td class="revenue-highlight">${r.amountPaid ? `£${r.amountPaid}` : '—'}</td>
+            <td><span class="badge badge-${r.status}">${r.status}</span></td>
+            <td style="color:var(--muted);font-size:0.75rem;">${new Date(r.createdAt).toLocaleDateString()}</td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-sm btn-orange" onclick='openEditModal(${JSON.stringify(r)})'>✏️ Edit</button>
+                ${r.status==='pending' ? `
+                  <button class="btn-sm btn-green" onclick="openApproveModal('${r._id}','${esc(r.fullName)}','${esc(r.email)}','${esc(r.duration)}')">✅</button>
+                  <button class="btn-sm btn-red"   onclick="rejectRequest('${r._id}')">✕</button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    } catch { body.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed to load</div>'; }
+  }
+
+  // ── APPROVE ──
+  function generateApproveCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    document.getElementById('m-passcode').value = code;
+  }
+
+  function openApproveModal(id, name, email, duration) {
+    pendingApproveId = id;
+    document.getElementById('approve-user-info').innerHTML = `<strong>${esc(name)}</strong> &nbsp;·&nbsp; ${esc(email)} &nbsp;·&nbsp; Requested: <strong>${esc(duration)}</strong>`;
+    const map = { '1 week':420, '1 month':1800, '3 months':5400, '6 months':10800, '1 year':21600 };
+    const mins = Object.entries(map).find(([k]) => duration?.toLowerCase().includes(k.toLowerCase()));
+    document.getElementById('m-minutes').value = mins ? mins[1] : 60;
+    document.getElementById('m-tier').value = 'free';
+    document.getElementById('m-expiry').value = '';
+    generateApproveCode();
+    document.getElementById('approve-modal').classList.add('show');
+  }
+
+  async function confirmApprove() {
+    if (!pendingApproveId) return;
+    const btn = document.getElementById('confirm-approve-btn');
+    btn.disabled = true; btn.textContent = 'Sending...';
+    const passcode = document.getElementById('m-passcode').value.trim().toUpperCase();
+    if (!passcode) { toast('Please generate or enter an access code', 'error'); btn.disabled = false; btn.textContent = '✉️ Send Approval & Code →'; return; }
+    try {
+      const r = await authFetch(`/admin/access-requests/${pendingApproveId}/approve`, { method:'POST',
+        body: JSON.stringify({ tier: document.getElementById('m-tier').value, remainingMinutes: parseInt(document.getElementById('m-minutes').value)||60, expiresAt: document.getElementById('m-expiry').value||null, passcode }) });
+      const d = await r.json();
+      if (!r.ok) toast(d.message||'Failed', 'error');
+      else { toast(`✅ Approved! Code sent: ${d.passcode}`, 'success'); closeModal('approve-modal'); loadRequests(); loadStats(); }
+    } catch { toast('Server error', 'error'); }
+    btn.disabled = false; btn.textContent = 'Send Approval →';
+  }
+
+  async function rejectRequest(id) {
+    try {
+      const r = await authFetch(`/admin/access-requests/${id}/reject`, { method:'POST' });
+      const d = await r.json();
+      if (r.ok) { toast('Request rejected'); loadRequests(); loadStats(); }
+      else toast(d.message||'Failed', 'error');
+    } catch { toast('Server error', 'error'); }
+  }
+
+  // ── EDIT REQUEST ──
+  function openEditModal(req) {
+    document.getElementById('edit-id').value = req._id;
+    document.getElementById('e-name').value      = req.fullName || '';
+    document.getElementById('e-email').value     = req.email || '';
+    document.getElementById('e-phone').value     = req.phoneNumber || '';
+    document.getElementById('e-duration').value  = req.duration || '';
+    document.getElementById('e-pay-status').value = req.paymentStatus || 'pending';
+    document.getElementById('e-amount').value    = req.amountPaid || '';
+    document.getElementById('e-notes').value     = req.notes || '';
+    document.getElementById('edit-modal').classList.add('show');
+  }
+
+  async function saveEdit() {
+    const id = document.getElementById('edit-id').value;
+    const body = {
+      fullName:      document.getElementById('e-name').value.trim(),
+      email:         document.getElementById('e-email').value.trim(),
+      phoneNumber:   document.getElementById('e-phone').value.trim(),
+      duration:      document.getElementById('e-duration').value.trim(),
+      paymentStatus: document.getElementById('e-pay-status').value,
+      amountPaid:    parseFloat(document.getElementById('e-amount').value) || 0,
+      notes:         document.getElementById('e-notes').value.trim(),
+    };
+    try {
+      const r = await authFetch(`/admin/access-requests/${id}`, { method:'PATCH', body:JSON.stringify(body) });
+      const d = await r.json();
+      if (r.ok) { toast('✅ Request updated'); closeModal('edit-modal'); loadRequests(); loadStats(); }
+      else toast(d.message || d.error || `Error ${r.status}`, 'error');
+    } catch(e) { toast(e && e.message ? `Error: ${e.message}` : 'Server error', 'error'); }
+  }
+
+  // ── USERS ──
+  async function loadUsers() {
+    const body = document.getElementById('users-body');
+    body.innerHTML = '<div class="empty-state"><div class="icon">⏳</div>Loading...</div>';
+    try {
+      const r = await authFetch('/admin/passcodes');
+      const d = await r.json();
+      const users = d.passcodes || d || [];
+      if (!users.length) { body.innerHTML = '<div class="empty-state"><div class="icon">🔐</div>No users yet</div>'; return; }
+      body.innerHTML = `<div style="overflow-x:auto;"><table>
+        <thead><tr><th>Label / Email</th><th>Code</th><th>Tier</th><th>Minutes Left</th><th>Expires</th><th>Actions</th></tr></thead>
+        <tbody>${users.map(u => `
+          <tr style="cursor:pointer;" onclick="openProfile('${u._id}')">
+            <td><strong>${esc(u.label||u.email||'—')}</strong>${u.email&&u.label?`<div style="font-size:0.72rem;color:var(--muted)">${esc(u.email)}</div>`:''}</td>
+            <td><span class="code-display">${esc(u.passcode)}</span></td>
+            <td><span class="badge badge-${u.tier||'free'}">${u.tier||'free'}</span></td>
+            <td>${u.remainingMinutes??'—'}</td>
+            <td style="color:var(--muted);font-size:0.75rem;">${u.expiresAt?new Date(u.expiresAt).toLocaleDateString():'—'}</td>
+            <td onclick="event.stopPropagation()">
+              <div class="actions-cell">
+                <button class="btn-sm btn-purple" onclick="openProfile('${u._id}')">👤 Profile</button>
+                <button class="btn-sm btn-red" onclick="deleteUser('${u._id}','${esc(u.email||u.passcode)}')">🗑</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    } catch { body.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed to load</div>'; }
+  }
+
+  async function deleteUser(id, label) {
+    if (!confirm(`Delete user "${label}"? This cannot be undone.`)) return;
+    try {
+      const r = await authFetch(`/admin/passcodes/${id}`, { method:'DELETE' });
+      const d = await r.json();
+      if (r.ok) { toast('User deleted'); loadUsers(); loadStats(); }
+      else toast(d.message||'Failed', 'error');
+    } catch { toast('Server error', 'error'); }
+  }
+
+  // ── USER PROFILE ──
+  let currentProfileId = null;
+  async function openProfile(id) {
+    currentProfileId = id;
+    document.getElementById('profile-content').innerHTML = '<div class="empty-state"><div class="icon">⏳</div>Loading...</div>';
+    document.getElementById('profile-modal').classList.add('show');
+    try {
+      const r = await authFetch(`/admin/users/${id}/interviews`);
+      const d = await r.json();
+      if (!r.ok) { document.getElementById('profile-content').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed to load</div>'; return; }
+      const { user, interviews, totalMinutesUsed } = d;
+      const initials = (user.label||user.email||user.passcode||'U').slice(0,2).toUpperCase();
+      document.getElementById('profile-content').innerHTML = `
+        <div class="profile-header">
+          <div class="profile-avatar">${initials}</div>
+          <div>
+            <div class="profile-name">${esc(user.label||user.email||'Unknown')}</div>
+            <div class="profile-email">${esc(user.email||'')} &nbsp;·&nbsp; <span class="code-display">${esc(user.passcode)}</span></div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat"><div class="profile-stat-val">${user.remainingMinutes??0}</div><div class="profile-stat-lbl">Min Remaining</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${totalMinutesUsed||0}</div><div class="profile-stat-lbl">Min Used</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${interviews.length}</div><div class="profile-stat-lbl">Sessions</div></div>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <span class="badge badge-${user.tier||'free'}">${user.tier||'free'}</span>
+          ${user.expiresAt ? `<span class="badge badge-pending">Expires ${new Date(user.expiresAt).toLocaleDateString()}</span>` : ''}
+          ${user.fraudFlag ? `<span class="badge" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);">⚠️ Flagged</span>` : ''}
+        </div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.6rem;">Interview Log</div>
+        ${interviews.length ? `
+          <div class="interview-log">
+            ${interviews.map(i => `
+              <div class="interview-row">
+                <div>
+                  <div class="interview-meta"><strong>${i.questions?.length||0} questions</strong> &nbsp;·&nbsp; ${Math.round(i.timeTaken/60)} min</div>
+                  <div class="interview-date">${new Date(i.date).toLocaleString()}</div>
+                </div>
+                <span class="badge badge-${i.status==='completed'?'approved':'pending'}">${i.status}</span>
+              </div>`).join('')}
+          </div>` : '<div class="empty-state" style="padding:1.5rem;"><div class="icon" style="font-size:1.5rem;">🎤</div>No interviews yet</div>'}
+      `;
+    } catch { document.getElementById('profile-content').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Error loading profile</div>'; }
+  }
+
+  // ── RESET DEVICE ──
+  async function resetDevice() {
+    if (!currentProfileId) return;
+    if (!confirm('Reset this user\'s device? They will be able to log in from a new device.')) return;
+    try {
+      const r = await authFetch(`/admin/passcodes/${currentProfileId}/reset-device`, { method: 'POST' });
+      const d = await r.json();
+      if (r.ok) { toast('Device reset! User can now log in from any device.', 'success'); }
+      else { toast(d.message || 'Reset failed', 'error'); }
+    } catch(e) { toast('Network error', 'error'); }
+  }
+
+  // ── CREATE CODE ──
+  function generateCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    document.getElementById('cf-code').value = code;
+  }
+
+  async function createCode() {
+    const passcode = document.getElementById('cf-code').value.trim();
+    if (!passcode) { toast('Generate or enter a code first', 'error'); return; }
+    try {
+      const r = await authFetch('/admin/passcodes', { method:'POST', body:JSON.stringify({
+        passcode, label: document.getElementById('cf-label').value.trim() || passcode,
+        tier: document.getElementById('cf-tier').value,
+        remainingMinutes: parseInt(document.getElementById('cf-minutes').value)||600,
+        expiresAt: document.getElementById('cf-expiry').value ? new Date(document.getElementById('cf-expiry').value).toISOString() : null,
+        recurring: document.getElementById('cf-recurring').value !== 'none' ? document.getElementById('cf-recurring').value : null,
+      })});
+      const d = await r.json();
+      if (!r.ok) { toast(d.message||'Failed', 'error'); return; }
+      toast(`✅ Code created: ${passcode}`);
+      ['cf-label','cf-code','cf-minutes','cf-expiry'].forEach(id => document.getElementById(id).value = '');
+      loadUsers(); loadStats();
+    } catch { toast('Server error', 'error'); }
+  }
+</script>
+</body>
+</html>

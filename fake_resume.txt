@@ -1,0 +1,10 @@
+John Doe
+123 Tech Lane, CA
+
+Experience:
+- 5 Years of React Development
+- Specialized in Next.js and Tailwind CSS
+- Expert in WebSocket Integrations
+
+Education:
+- B.S in Computer Science

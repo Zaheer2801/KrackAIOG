@@ -1,0 +1,124 @@
+<div class="min-h-screen bg-[#0d0d0d] text-[#e5e5e5] p-6">
+
+  @if (!enabled) {
+  <div class="max-w-md mx-auto mt-32 text-center">
+    <p class="text-[#666]">This feature is not available.</p>
+  </div>
+  } @else {
+
+  <div class="max-w-3xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-[10px] text-[#6366f1] font-bold tracking-[0.3em] uppercase mb-1">In Development · Practice Only</p>
+        <h1 class="text-2xl font-bold text-white tracking-tight">🎙️ Voice Setup</h1>
+        <p class="text-[#666] text-sm mt-1">Record the scripts in your natural voice — accent, pauses and all. Then we clone it and verify the quality.</p>
+      </div>
+      <button (click)="back()" class="px-3 py-1.5 rounded-lg border border-[#2a2a2a] text-[#888] hover:text-white text-xs font-bold tracking-widest">← BACK</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="bg-[#141414] border border-[#262626] rounded-2xl p-4 mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-bold text-[#888] tracking-widest uppercase">Recording Progress</span>
+        <span class="text-[11px] font-bold text-[#818cf8]">{{ recordedCount }} / {{ totalSections }}</span>
+      </div>
+      <div class="w-full h-1.5 bg-[#0a0a0a] rounded-full overflow-hidden">
+        <div class="h-full bg-[#6366f1] rounded-full transition-all duration-500" [style.width]="(recordedCount / totalSections * 100) + '%'"></div>
+      </div>
+    </div>
+
+    <!-- Recording sections -->
+    <div class="space-y-3 mb-6">
+      @for (section of sections; track section.id) {
+      <div class="bg-[#141414] border rounded-2xl p-5"
+        [class]="recordedSamples.has(section.id) ? 'border-emerald-900/50' : 'border-[#262626]'">
+        <div class="flex items-start justify-between mb-3">
+          <div>
+            <h3 class="text-white font-bold text-sm">{{ section.title }}</h3>
+            <p class="text-[#666] text-[11px] mt-0.5">{{ section.purpose }}</p>
+          </div>
+          @if (recordedSamples.has(section.id)) {
+          <span class="text-[10px] font-bold text-emerald-400 tracking-widest">✓ RECORDED</span>
+          }
+        </div>
+
+        <!-- Lines to read -->
+        <div class="bg-[#0a0a0a] border border-[#1e1e1e] rounded-xl p-4 mb-3 space-y-2">
+          @for (line of section.lines; track $index) {
+          <p class="text-[#ccc] text-sm leading-relaxed">{{ line }}</p>
+          }
+        </div>
+
+        <!-- Controls -->
+        <div class="flex gap-2">
+          @if (recordingSectionId === section.id) {
+          <button (click)="stopRecording()" class="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white font-bold rounded-lg text-[11px] tracking-widest animate-pulse">
+            ■ STOP RECORDING
+          </button>
+          } @else if (!recordedSamples.has(section.id)) {
+          <button (click)="startRecording(section.id)" [disabled]="recordingSectionId !== null"
+            class="flex items-center gap-2 px-4 py-2 bg-[#6366f1] hover:bg-[#5254cc] text-white font-bold rounded-lg text-[11px] tracking-widest disabled:opacity-40">
+            ● RECORD
+          </button>
+          } @else {
+          <button (click)="playSample(section.id)" class="px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] text-[#aaa] font-bold rounded-lg text-[11px] tracking-widest">▶ PLAY</button>
+          <button (click)="reRecord(section.id)" class="px-4 py-2 border border-[#2a2a2a] text-[#888] font-bold rounded-lg text-[11px] tracking-widest">↻ RE-RECORD</button>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Step 2: Create clone -->
+    <div class="bg-[#141414] border border-[#262626] rounded-2xl p-5 mb-5">
+      <h3 class="text-white font-bold text-sm mb-1">Step 2 — Create Your Voice Clone</h3>
+      <p class="text-[#666] text-[11px] mb-3">Record all {{ totalSections }} sections, then create the clone.</p>
+      <button (click)="createClone()" [disabled]="!allRecorded || isCloning || voiceId !== null"
+        class="px-6 py-3 bg-[#6366f1] hover:bg-[#5254cc] text-white font-extrabold rounded-xl text-xs tracking-widest disabled:opacity-40">
+        {{ isCloning ? 'CLONING...' : voiceId ? '✓ CLONE CREATED' : '✨ CREATE CLONE' }}
+      </button>
+    </div>
+
+    <!-- Step 3: Verify -->
+    @if (voiceId) {
+    <div class="bg-[#141414] border border-[#262626] rounded-2xl p-5 mb-5">
+      <h3 class="text-white font-bold text-sm mb-1">Step 3 — Verify Quality</h3>
+      <p class="text-[#666] text-[11px] mb-3">We synthesize held-out test lines in your cloned voice, transcribe them back, and score the match. ≥90% = clean clone.</p>
+      <button (click)="runVerification()" [disabled]="isVerifying"
+        class="px-6 py-3 bg-[#1a1a1a] border border-[#2a2a2a] hover:border-[#444] text-white font-bold rounded-xl text-xs tracking-widest disabled:opacity-40">
+        {{ isVerifying ? 'VERIFYING...' : '🔍 RUN VERIFICATION' }}
+      </button>
+
+      @if (report) {
+      <div class="mt-4">
+        <div class="flex items-center gap-3 mb-3 p-3 rounded-xl"
+          [class]="report.overallAccuracy >= 0.9 ? 'bg-emerald-950/40 border border-emerald-900/50' : 'bg-rose-950/40 border border-rose-900/50'">
+          <span class="text-2xl font-extrabold" [class]="report.overallAccuracy >= 0.9 ? 'text-emerald-400' : 'text-rose-400'">
+            {{ (report.overallAccuracy * 100).toFixed(0) }}%
+          </span>
+          <span class="text-sm font-bold" [class]="report.overallAccuracy >= 0.9 ? 'text-emerald-300' : 'text-rose-300'">
+            {{ report.overallVerdict }}
+          </span>
+        </div>
+        <div class="space-y-2">
+          @for (r of report.results; track r.id) {
+          <div class="bg-[#0a0a0a] border border-[#1e1e1e] rounded-lg p-3">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-bold tracking-widest uppercase" [class]="verdictClass(r.verdict)">{{ r.verdict }} · {{ (r.accuracy * 100).toFixed(0) }}%</span>
+              <button (click)="playInMyVoice(r.expected)" [disabled]="isSynthesizing" class="text-[10px] text-[#818cf8] font-bold tracking-widest disabled:opacity-40">▶ HEAR IN MY VOICE</button>
+            </div>
+            <p class="text-[11px] text-[#888]"><span class="text-[#555]">Expected:</span> {{ r.expected }}</p>
+            <p class="text-[11px] text-[#888]"><span class="text-[#555]">Heard:</span> {{ r.heard }}</p>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+  </div>
+  }
+</div>

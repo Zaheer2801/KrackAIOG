@@ -1,0 +1,43 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+release/
+**/release/
+
+# Angular cache
+.angular/
+**/.angular/
+
+# Electron builder output
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code local settings
+.claude/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test files at root (local only)
+test-db.ts
+test-db.js
+test-admin-token.js
+test_stream.js
+check_site.js
